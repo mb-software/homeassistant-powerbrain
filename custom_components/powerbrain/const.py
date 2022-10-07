@@ -11,20 +11,9 @@ ISSUE_URL = "https://github.com/mb-software/homeassistant-powerbrain/issues"
 # Icons
 ICON = "mdi:format-quote-close"
 
-# Device classes
-BINARY_SENSOR_DEVICE_CLASS = "connectivity"
-
-# Platforms
-BINARY_SENSOR = "binary_sensor"
-SENSOR = "sensor"
-SWITCH = "switch"
-PLATFORMS = [BINARY_SENSOR, SENSOR, SWITCH]
-
 
 # Configuration and options
-CONF_ENABLED = "enabled"
-CONF_USERNAME = "username"
-CONF_PASSWORD = "password"
+
 
 # Defaults
 DEFAULT_NAME = DOMAIN

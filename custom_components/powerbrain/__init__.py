@@ -4,107 +4,99 @@ Custom integration to integrate cFos Powerbrain with Home Assistant.
 For more details about this integration, please refer to
 https://github.com/mb-software/homeassistant-powerbrain
 """
-import asyncio
-import logging
+from __future__ import annotations
+
 from datetime import timedelta
+import logging
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import Config
+from homeassistant.const import CONF_HOST, CONF_SCAN_INTERVAL, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
-from homeassistant.helpers.update_coordinator import UpdateFailed
+from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .api import PowerbrainApiClient
-from .const import CONF_PASSWORD
-from .const import CONF_USERNAME
 from .const import DOMAIN
-from .const import PLATFORMS
-from .const import STARTUP_MESSAGE
+from .powerbrain import Device, Powerbrain
 
-SCAN_INTERVAL = timedelta(seconds=30)
+_LOGGER = logging.getLogger(__name__)
 
-_LOGGER: logging.Logger = logging.getLogger(__package__)
+# List the platforms that you want to support.
+PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.NUMBER, Platform.SWITCH]
 
 
-async def async_setup(hass: HomeAssistant, config: Config):
-    """Set up this integration using YAML is not supported."""
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Set up cFos Powerbrain from a config entry."""
+
+    hass.data.setdefault(DOMAIN, {})
+
+    # hass.data[DOMAIN][entry.entry_id] = MyApi(...)
+
+    # Create Api instance
+    brain = Powerbrain(entry.data[CONF_HOST])
+
+    # Validate the API connection (and authentication)
+    try:
+        await hass.async_add_executor_job(brain.get_params)
+    except Exception as exc:
+        raise ConfigEntryNotReady("Timeout while connecting to Powerbrain") from exc
+
+    # Store an API object for your platforms to access
+    hass.data[DOMAIN][entry.entry_id] = brain
+
+    # Create the updatecoordinator instance
+    coordinator = PowerbrainUpdateCoordinator(
+        hass, brain, entry.data[CONF_SCAN_INTERVAL]
+    )
+    await coordinator.async_config_entry_first_refresh()
+    hass.data[DOMAIN][entry.entry_id + "_coordinator"] = coordinator
+
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+
     return True
-
-
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
-    """Set up this integration using UI."""
-    if hass.data.get(DOMAIN) is None:
-        hass.data.setdefault(DOMAIN, {})
-        _LOGGER.info(STARTUP_MESSAGE)
-
-    username = entry.data.get(CONF_USERNAME)
-    password = entry.data.get(CONF_PASSWORD)
-
-    session = async_get_clientsession(hass)
-    client = PowerbrainApiClient(username, password, session)
-
-    coordinator = PowerbrainDataUpdateCoordinator(hass, client=client)
-    await coordinator.async_refresh()
-
-    if not coordinator.last_update_success:
-        raise ConfigEntryNotReady
-
-    hass.data[DOMAIN][entry.entry_id] = coordinator
-
-    for platform in PLATFORMS:
-        if entry.options.get(platform, True):
-            coordinator.platforms.append(platform)
-            hass.async_add_job(
-                hass.config_entries.async_forward_entry_setup(entry, platform)
-            )
-
-    entry.add_update_listener(async_reload_entry)
-    return True
-
-
-class PowerbrainDataUpdateCoordinator(DataUpdateCoordinator):
-    """Class to manage fetching data from the API."""
-
-    def __init__(
-        self,
-        hass: HomeAssistant,
-        client: PowerbrainApiClient,
-    ) -> None:
-        """Initialize."""
-        self.api = client
-        self.platforms = []
-
-        super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
-
-    async def _async_update_data(self):
-        """Update data via library."""
-        try:
-            return await self.api.async_get_data()
-        except Exception as exception:
-            raise UpdateFailed() from exception
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Handle removal of an entry."""
-    coordinator = hass.data[DOMAIN][entry.entry_id]
-    unloaded = all(
-        await asyncio.gather(
-            *[
-                hass.config_entries.async_forward_entry_unload(entry, platform)
-                for platform in PLATFORMS
-                if platform in coordinator.platforms
-            ]
-        )
-    )
-    if unloaded:
+    """Unload a config entry."""
+    if unload_ok := await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
         hass.data[DOMAIN].pop(entry.entry_id)
 
-    return unloaded
+    return unload_ok
 
 
-async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    """Reload config entry."""
-    await async_unload_entry(hass, entry)
-    await async_setup_entry(hass, entry)
+class PowerbrainUpdateCoordinator(DataUpdateCoordinator):
+    """Coordinator to fetch data from the powerbrain api."""
+
+    def __init__(self, hass, brain: Powerbrain, update_interval: int):
+        """Initialize my coordinator."""
+        super().__init__(
+            hass,
+            _LOGGER,
+            # Name of the data. For logging purposes.
+            name="Powerbrain Api data",
+            # Polling interval. Will only be polled if there are subscribers.
+            update_interval=timedelta(seconds=update_interval),
+        )
+        self.brain = brain
+
+    async def _async_update_data(self):
+        """Fetch data from API endpoint."""
+        try:
+            # Note: asyncio.TimeoutError and aiohttp.ClientError are already
+            # handled by the data update coordinator.
+            await self.hass.async_add_executor_job(self.brain.update_device_status)
+        except Exception as err:
+            raise UpdateFailed(f"Error communicating with API: {err}") from err
+
+
+def get_entity_deviceinfo(device: Device) -> DeviceInfo:
+    """Get Entity device info from Powerbrain device instance."""
+    return {
+        "identifiers": {
+            # Serial numbers are unique identifiers within a specific domain
+            (DOMAIN, device.name)
+        },
+        "name": device.name,
+        "manufacturer": "cFos",
+        "model": device.attributes["model"],
+    }

@@ -5,27 +5,18 @@
         "title": "cFos Powerbrain",
         "description": "If you need help with the configuration have a look here: https://github.com/mb-software/homeassistant-powerbrain",
         "data": {
-          "username": "Username",
-          "password": "Password"
+          "host": "Host",
+          "scan_interval": "Update Interval"
         }
       }
     },
     "error": {
-      "auth": "Username/Password is wrong."
+      "cannot_connect": "Failed to connect",
+      "invalid_auth": "Invalid authentication",
+      "unknown": "Unexpected error"
     },
     "abort": {
       "single_instance_allowed": "Only a single instance is allowed."
-    }
-  },
-  "options": {
-    "step": {
-      "user": {
-        "data": {
-          "binary_sensor": "Binary sensor enabled",
-          "sensor": "Sensor enabled",
-          "switch": "Switch enabled"
-        }
-      }
     }
   }
 }
