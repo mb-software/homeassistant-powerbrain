@@ -5,6 +5,9 @@
   "issue_tracker": "https://github.com/mb-software/homeassistant-powerbrain/issues",
   "dependencies": [],
   "config_flow": true,
-  "codeowners": ["@mb-software"],
-  "requirements": []
+  "codeowners": [
+    "@mb-software"
+  ],
+  "requirements": [],
+  "version": "0.0.1"
 }
