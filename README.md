@@ -8,20 +8,21 @@
 
 <a href="https://www.buymeacoffee.com/mbsoftware"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=mbsoftware&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff" /></a>
 
-
-**This component will set up devices (EV charging stations and powermeters) connected to a cFos Powerbrain controller using the local http API
+\*\*This component will set up devices (EV charging stations and powermeters) connected to a cFos Powerbrain controller using the local http API
 
 ## Features
+
 - Automatically discovers and creates devices (powermeters and charging stations) connected to a Powerbrain controller
 - Creates sensors to read values from power meters (voltage, current, energy, ...)
 - Creates switches to control charging stations (enable charging, enable charging rules, set charging current, ...)
-- ...More to come... 
+- ...More to come...
 
-**Please note that this integration is still in an early stage and functionality will likely be extended further.
+\*\*Please note that this integration is still in an early stage and functionality will likely be extended further.
 
 ![example][exampleimg]
 
 ## Manual Installation
+
 1. Using the tool of choice open the directory (folder) for your HA configuration (where you find `configuration.yaml`).
 2. If you do not have a `custom_components` directory (folder) there, you need to create it.
 3. In the `custom_components` directory (folder) create a new folder called `powerbrain`.
@@ -31,20 +32,19 @@
 7. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "cFos Powerbrain"
 
 ## Installation using HACS
+
 ...
 
 ## Configuration is done in the UI
+
 Simply enter the host (IP address) of your powerbrain controller in the local network and choose the update intervall [seconds] the integration uses to poll the sensor values.
 
 ![config1img]
 ![config2img]
 
-
 ## Contributions are welcome!
 
 If you want to contribute to this please read the [Contribution guidelines](CONTRIBUTING.md)
-
-
 
 ---
 
