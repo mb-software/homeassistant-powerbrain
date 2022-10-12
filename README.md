@@ -33,7 +33,8 @@
 
 ## Installation using HACS
 
-...
+Simply install this repository as a custom repository in HACS following the guide here:
+https://hacs.xyz/docs/faq/custom_repositories
 
 ## Configuration is done in the UI
 
