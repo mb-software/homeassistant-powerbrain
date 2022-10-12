@@ -34,8 +34,11 @@
 ...
 
 ## Configuration is done in the UI
+Simply enter the host (IP address) of your powerbrain controller in the local network and choose the update intervall [seconds] the integration uses to poll the sensor values.
 
-<!---->
+![config1img]
+![config2img]
+
 
 ## Contributions are welcome!
 
