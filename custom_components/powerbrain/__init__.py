@@ -6,18 +6,22 @@ https://github.com/mb-software/homeassistant-powerbrain
 """
 from __future__ import annotations
 
-from datetime import timedelta
 import logging
+from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_HOST, CONF_SCAN_INTERVAL, Platform
+from homeassistant.const import CONF_HOST
+from homeassistant.const import CONF_SCAN_INTERVAL
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.entity import DeviceInfo
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from homeassistant.helpers.update_coordinator import UpdateFailed
 
 from .const import DOMAIN
-from .powerbrain import Device, Powerbrain
+from .powerbrain import Device
+from .powerbrain import Powerbrain
 
 _LOGGER = logging.getLogger(__name__)
 

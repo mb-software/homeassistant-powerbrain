@@ -1,17 +1,20 @@
 """Switch platform of powerbrain integration."""
-
 from typing import Any
 
-from homeassistant.components.switch import SwitchDeviceClass, SwitchEntity
+from homeassistant.components.switch import SwitchDeviceClass
+from homeassistant.components.switch import SwitchEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import callback
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .__init__ import PowerbrainUpdateCoordinator, get_entity_deviceinfo
+from .__init__ import get_entity_deviceinfo
+from .__init__ import PowerbrainUpdateCoordinator
 from .const import DOMAIN
-from .powerbrain import Evse, Powerbrain
+from .powerbrain import Evse
+from .powerbrain import Powerbrain
 
 
 async def async_setup_entry(

@@ -1,5 +1,4 @@
 """cFos Powerbrain http API interface."""
-
 import requests
 
 API_GET_PARAMS = "/cnf?cmd=get_params"

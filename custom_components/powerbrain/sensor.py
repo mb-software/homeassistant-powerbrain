@@ -1,23 +1,23 @@
 """Sensor platform."""
-
 import logging
 import types
 from typing import Any
 
-from homeassistant.components.sensor import (
-    SensorDeviceClass,
-    SensorEntity,
-    SensorStateClass,
-)
+from homeassistant.components.sensor import SensorDeviceClass
+from homeassistant.components.sensor import SensorEntity
+from homeassistant.components.sensor import SensorStateClass
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import callback
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .__init__ import PowerbrainUpdateCoordinator, get_entity_deviceinfo
+from .__init__ import get_entity_deviceinfo
+from .__init__ import PowerbrainUpdateCoordinator
 from .const import DOMAIN
-from .powerbrain import Device, Powerbrain
+from .powerbrain import Device
+from .powerbrain import Powerbrain
 
 _LOGGER = logging.getLogger(__name__)
 
