@@ -1,8 +1,8 @@
 {
+  "title": "cFos Powerbrain",
   "config": {
     "step": {
       "user": {
-        "title": "cFos Powerbrain",
         "description": "If you need help with the configuration have a look here: https://github.com/mb-software/homeassistant-powerbrain",
         "data": {
           "host": "Host",
