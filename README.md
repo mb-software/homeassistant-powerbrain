@@ -17,9 +17,20 @@
 - Creates switches to control charging stations (enable charging, enable charging rules, set charging current, ...)
 - ...More to come...
 
-\*\*Please note that this integration is still in an early stage and functionality will likely be extended further.
+\*\*Please note that this integration is still in an early stage and functionality will likely be extended in the future. If you experience any issues or bugs, please raise an issue on Github. If you want to contribute, please also read the [Contribution guidelines](CONTRIBUTING.md) .
+
+
+
 
 ![example][exampleimg]
+
+
+## Installation using HACS
+
+Simply install this repository as a custom repository for integrations in HACS following the guide here:
+https://hacs.xyz/docs/faq/custom_repositories .
+
+Then you can simply download and update the integration using HACS
 
 ## Manual Installation
 
@@ -31,10 +42,6 @@
 6. Restart Home Assistant
 7. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "cFos Powerbrain"
 
-## Installation using HACS
-
-Simply install this repository as a custom repository in HACS following the guide here:
-https://hacs.xyz/docs/faq/custom_repositories
 
 ## Configuration is done in the UI
 
