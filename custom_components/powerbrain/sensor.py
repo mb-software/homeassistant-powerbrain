@@ -56,9 +56,9 @@ class PowerbrainDeviceSensor(CoordinatorEntity, SensorEntity):
         device: Device,
         attr: str,
         name: str,
-        unit: str = "",
-        deviceclass: str = "",
-        stateclass: str = SensorStateClass.MEASUREMENT,
+        unit: str = None,
+        deviceclass: str = None,
+        stateclass: str = None,
         state_modifier: Any = None,
     ) -> None:
         """Initialize sensor attributes."""
@@ -107,6 +107,7 @@ def create_meter_entities(coordinator: PowerbrainUpdateCoordinator, device: Devi
             "Power",
             "VA" if device.attributes["is_va"] else "W",
             SensorDeviceClass.POWER,
+            SensorStateClass.MEASUREMENT,
         )
     )
     ret.append(
@@ -177,6 +178,7 @@ def create_meter_entities(coordinator: PowerbrainUpdateCoordinator, device: Devi
             "Voltage L1",
             "V",
             SensorDeviceClass.VOLTAGE,
+            SensorStateClass.MEASUREMENT,
         )
     )
     ret.append(
@@ -187,6 +189,7 @@ def create_meter_entities(coordinator: PowerbrainUpdateCoordinator, device: Devi
             "Voltage L2",
             "V",
             SensorDeviceClass.VOLTAGE,
+            SensorStateClass.MEASUREMENT,
         )
     )
     ret.append(
@@ -197,6 +200,7 @@ def create_meter_entities(coordinator: PowerbrainUpdateCoordinator, device: Devi
             "Voltage L3",
             "V",
             SensorDeviceClass.VOLTAGE,
+            SensorStateClass.MEASUREMENT,
         )
     )
     return ret
@@ -214,6 +218,7 @@ def create_evse_entities(coordinator: PowerbrainUpdateCoordinator, device: Devic
             "Charging Power",
             "W",
             SensorDeviceClass.POWER,
+            SensorStateClass.MEASUREMENT,
         )
     )
     ret.append(
