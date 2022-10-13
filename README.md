@@ -21,9 +21,7 @@
 
 If you want to do me a favor you can [buy me a coffee] or if you want to purchase one of the great cFos Power Brain Wallboxes you can get a <b>20€ discount</b> on all wallboxes using the coupon code <b>mb-software</b> or my affiliate link to the <a href="https://shop.cfos-emobility.de/markus-bitzer">cFos emobility shop</a>.
 
-
 ![example][exampleimg]
-
 
 ## Installation using HACS
 
@@ -42,7 +40,6 @@ Then you can simply download and update the integration using HACS
 6. Restart Home Assistant
 7. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "cFos Powerbrain"
 
-
 ## Configuration is done in the UI
 
 Simply enter the host (IP address) of your powerbrain controller in the local network and choose the update intervall [seconds] the integration uses to poll the sensor values.
@@ -55,7 +52,6 @@ Simply enter the host (IP address) of your powerbrain controller in the local ne
 If you want to contribute to this please read the [Contribution guidelines](CONTRIBUTING.md)
 
 ---
-
 
 [buy me a coffee]: https://www.buymeacoffee.com/mbsoftware
 [commits-shield]: https://img.shields.io/github/commit-activity/y/mb-software/homeassistant-powerbrain.svg?style=for-the-badge
