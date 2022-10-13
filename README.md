@@ -8,7 +8,7 @@
 
 <a href="https://www.buymeacoffee.com/mbsoftware"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=mbsoftware&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff" /></a>
 
-\*\*This component will set up devices (EV charging stations and powermeters) connected to a cFos Powerbrain controller using the local http API
+### Integration for Homeassistant to view and control devices (EV charging stations and powermeters) connected to a cFos Powerbrain charging controller
 
 ## Features
 
@@ -19,7 +19,7 @@
 
 \*\*Please note that this integration is still in an early stage and functionality will likely be extended in the future. If you experience any issues or bugs, please raise an issue on Github. If you want to contribute, please also read the [Contribution guidelines](CONTRIBUTING.md) .
 
-
+If you want to do me a favor you can [buy me a coffee] or if you want to purchase one of the great cFos Power Brain Wallboxes you can get a <b>20€ discount</b> on all wallboxes using the coupon code <b>mb-software</b> or my affiliate link to the <a href="https://shop.cfos-emobility.de/markus-bitzer">cFos emobility shop</a>.
 
 
 ![example][exampleimg]
@@ -56,17 +56,12 @@ If you want to contribute to this please read the [Contribution guidelines](CONT
 
 ---
 
-[integration_blueprint]: https://github.com/custom-components/integration_blueprint
-[black]: https://github.com/psf/black
-[black-shield]: https://img.shields.io/badge/code%20style-black-000000.svg?style=for-the-badge
-[buymecoffee]: https://www.buymeacoffee.com/mb-software
-[buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg?style=for-the-badge
+
+[buy me a coffee]: https://www.buymeacoffee.com/mbsoftware
 [commits-shield]: https://img.shields.io/github/commit-activity/y/mb-software/homeassistant-powerbrain.svg?style=for-the-badge
 [commits]: https://github.com/mb-software/homeassistant-powerbrain/commits/main
 [hacs]: https://hacs.xyz
 [hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
-[discord]: https://discord.gg/Qa5fW2R
-[discord-shield]: https://img.shields.io/discord/330944238910963714.svg?style=for-the-badge
 [exampleimg]: doc/evse.png
 [config1img]: doc/ConfigFlow.png
 [config2img]: doc/device_discovery.png
