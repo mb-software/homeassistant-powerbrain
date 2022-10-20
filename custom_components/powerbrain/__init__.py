@@ -48,10 +48,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Store an API object for your platforms to access
     hass.data[DOMAIN][entry.entry_id] = brain
 
+    update_interval = entry.data[CONF_SCAN_INTERVAL]
+    if entry.options.get(CONF_SCAN_INTERVAL):
+        update_interval = entry.options.get(CONF_SCAN_INTERVAL)
+    # listen for option updates
+    entry.async_on_unload(entry.add_update_listener(update_listener))
+
     # Create the updatecoordinator instance
-    coordinator = PowerbrainUpdateCoordinator(
-        hass, brain, entry.data[CONF_SCAN_INTERVAL]
-    )
+    coordinator = PowerbrainUpdateCoordinator(hass, brain, update_interval)
     await coordinator.async_config_entry_first_refresh()
     hass.data[DOMAIN][entry.entry_id + "_coordinator"] = coordinator
 
@@ -66,6 +70,16 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass.data[DOMAIN].pop(entry.entry_id)
 
     return unload_ok
+
+
+async def update_listener(hass, entry):
+    """Handle options update."""
+    coordinator: PowerbrainUpdateCoordinator = hass.data[DOMAIN][
+        entry.entry_id + "_coordinator"
+    ]
+    coordinator.update_interval = timedelta(
+        seconds=entry.options.get(CONF_SCAN_INTERVAL)
+    )
 
 
 class PowerbrainUpdateCoordinator(DataUpdateCoordinator):

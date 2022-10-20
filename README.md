@@ -8,7 +8,7 @@
 
 <a href="https://www.buymeacoffee.com/mbsoftware"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=mbsoftware&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff" /></a>
 
-### Integration for Homeassistant to view and control devices (EV charging stations and powermeters) connected to a cFos Powerbrain charging controller
+### Integration for Homeassistant to view and control devices (EV charging stations and powermeters) connected to a cFos Powerbrain charging controller or cFos charging manager
 
 ## Features
 
@@ -17,7 +17,7 @@
 - Creates switches to control charging stations (enable charging, enable charging rules, set charging current, ...)
 - ...More to come...
 
-\*\*Please note that this integration is still in an early stage and functionality will likely be extended in the future. If you experience any issues or bugs, please raise an issue on Github. If you want to contribute, please also read the [Contribution guidelines](CONTRIBUTING.md) .
+\*\*Please note that this integration is still in an early stage and functionality will likely be extended in the future. If you experience any issues or bugs or if you have a feature request, please raise an issue on Github. If you want to contribute, please also read the [Contribution guidelines](CONTRIBUTING.md) .
 
 If you want to do me a favor you can [buy me a coffee] or if you want to purchase one of the great cFos Power Brain Wallboxes you can get a <b>20€ discount</b> on all wallboxes using the coupon code <b>mb-software</b> or my affiliate link to the <a href="https://shop.cfos-emobility.de/markus-bitzer">cFos emobility shop</a>.
 

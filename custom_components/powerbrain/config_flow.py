@@ -9,6 +9,7 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_HOST
 from homeassistant.const import CONF_SCAN_INTERVAL
+from homeassistant.core import callback
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
@@ -22,7 +23,7 @@ _LOGGER = logging.getLogger(__name__)
 STEP_USER_DATA_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_HOST, default="http://192.168.0.10"): cv.string,
-        vol.Optional(CONF_SCAN_INTERVAL, default=20): cv.positive_int,
+        vol.Optional(CONF_SCAN_INTERVAL, default=10): cv.positive_int,
     }
 )
 
@@ -88,6 +89,46 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
+        )
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(
+        config_entry: config_entries.ConfigEntry,
+    ) -> config_entries.OptionsFlow:
+        """Create the options flow."""
+        return OptionsFlowHandler(config_entry)
+
+
+class OptionsFlowHandler(config_entries.OptionsFlow):
+    """Powerbrain options flow handler."""
+
+    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
+        """Initialize options flow."""
+        self.config_entry = config_entry
+        self.update_interval = config_entry.data[CONF_SCAN_INTERVAL]
+        if config_entry.options.get(CONF_SCAN_INTERVAL):
+            self.update_interval = config_entry.options.get(CONF_SCAN_INTERVAL)
+
+    async def async_step_init(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Manage the options."""
+        if user_input is not None:
+            return self.async_create_entry(
+                title=self.config_entry.title, data=user_input
+            )
+
+        return self.async_show_form(
+            step_id="init",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(
+                        CONF_SCAN_INTERVAL,
+                        default=self.update_interval,
+                    ): cv.positive_int
+                }
+            ),
         )
 
 

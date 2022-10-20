@@ -6,7 +6,7 @@
         "description": "If you need help with the configuration have a look here: https://github.com/mb-software/homeassistant-powerbrain",
         "data": {
           "host": "Host",
-          "scan_interval": "Update Interval"
+          "scan_interval": "Update Interval [s]"
         }
       }
     },
@@ -17,6 +17,15 @@
     },
     "abort": {
       "single_instance_allowed": "Only a single instance is allowed."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "scan_interval": "Update Interval [s]"
+        }
+      }
     }
   }
 }
