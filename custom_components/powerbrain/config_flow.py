@@ -8,7 +8,9 @@ import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_HOST
+from homeassistant.const import CONF_PASSWORD
 from homeassistant.const import CONF_SCAN_INTERVAL
+from homeassistant.const import CONF_USERNAME
 from homeassistant.core import callback
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
@@ -23,6 +25,8 @@ _LOGGER = logging.getLogger(__name__)
 STEP_USER_DATA_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_HOST, default="http://192.168.0.10"): cv.string,
+        vol.Required(CONF_USERNAME, default="admin"): cv.string,
+        vol.Optional(CONF_PASSWORD, default=""): cv.string,
         vol.Optional(CONF_SCAN_INTERVAL, default=10): cv.positive_int,
     }
 )
@@ -51,9 +55,9 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     # Return info that you want to store in the config entry.
     # return {"title": "Name of the device"}
 
-    brain = Powerbrain(data["host"])
+    brain = Powerbrain(data[CONF_HOST], data[CONF_USERNAME], data[CONF_PASSWORD])
     try:
-        await hass.async_add_executor_job(brain.get_params)
+        await hass.async_add_executor_job(brain.get_devices)
         return {"title": brain.name}
     except Exception as exc:
         raise CannotConnect from exc

@@ -11,14 +11,16 @@ API_OVERRIDE_FLAGS = "&flags="
 class Powerbrain:
     """Powerbrain charging controller class."""
 
-    def __init__(self, host):
+    def __init__(self, host, username, password):
         """Initialize the Powerbrain instance."""
         self.host = host
+        self.username = username
+        self.password = password
         self.name = ""
         self.devices = {}
         self.attributes = {}
 
-    def get_params(self):
+    def get_devices(self):
         """Get powerbrain attributes and available devices."""
 
         dev_info = requests.get(self.host + API_GET_DEV_INFO, timeout=5).json()
@@ -62,21 +64,27 @@ class Evse(Device):
 
     def override_current_limit(self, value: float):
         """Override max charging current."""
-        requests.get(
+        response = requests.get(
             f"{self.brain.host}{API_OVERRIDE_DEVICE}{self.dev_id}{API_OVERRIDE_FLAG_AMPS}{value}",
             timeout=5,
+            auth=(self.brain.username, self.brain.password),
         )
+        response.raise_for_status()
 
     def disable_charging(self, disable: bool):
         """Disable or enable charging."""
-        requests.get(
+        response = requests.get(
             f"{self.brain.host}{API_OVERRIDE_DEVICE}{self.dev_id}{API_OVERRIDE_FLAGS}{'C' if disable else 'c'}",
             timeout=5,
+            auth=(self.brain.username, self.brain.password),
         )
+        response.raise_for_status()
 
     def disable_charging_rules(self, disable: bool):
         """Disable or enable charging rules."""
-        requests.get(
+        response = requests.get(
             f"{self.brain.host}{API_OVERRIDE_DEVICE}{self.dev_id}{API_OVERRIDE_FLAGS}{'E' if disable else 'e'}",
             timeout=5,
+            auth=(self.brain.username, self.brain.password),
         )
+        response.raise_for_status()

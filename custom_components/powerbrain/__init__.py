@@ -11,7 +11,9 @@ from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST
+from homeassistant.const import CONF_PASSWORD
 from homeassistant.const import CONF_SCAN_INTERVAL
+from homeassistant.const import CONF_USERNAME
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
@@ -37,11 +39,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # hass.data[DOMAIN][entry.entry_id] = MyApi(...)
 
     # Create Api instance
-    brain = Powerbrain(entry.data[CONF_HOST])
+    brain = Powerbrain(
+        entry.data[CONF_HOST], entry.data[CONF_USERNAME], entry.data[CONF_PASSWORD]
+    )
 
     # Validate the API connection (and authentication)
     try:
-        await hass.async_add_executor_job(brain.get_params)
+        await hass.async_add_executor_job(brain.get_devices)
     except Exception as exc:
         raise ConfigEntryNotReady("Timeout while connecting to Powerbrain") from exc
 
