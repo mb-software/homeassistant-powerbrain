@@ -16,6 +16,7 @@ from homeassistant.const import CONF_SCAN_INTERVAL
 from homeassistant.const import CONF_USERNAME
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
@@ -31,12 +32,27 @@ _LOGGER = logging.getLogger(__name__)
 PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.NUMBER, Platform.SWITCH]
 
 
+async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Migrate old entry."""
+    _LOGGER.debug("Migrating from version %s", entry.version)
+
+    if entry.version == 1:
+        new = {**entry.data}
+        new[CONF_USERNAME] = "admin"
+        new[CONF_PASSWORD] = ""
+
+        entry.version = 2
+        hass.config_entries.async_update_entry(entry, data=new)
+
+    _LOGGER.debug("Migrating to version %s successful", entry.version)
+
+    return True
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up cFos Powerbrain from a config entry."""
 
     hass.data.setdefault(DOMAIN, {})
-
-    # hass.data[DOMAIN][entry.entry_id] = MyApi(...)
 
     # Create Api instance
     brain = Powerbrain(
@@ -48,6 +64,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         await hass.async_add_executor_job(brain.get_devices)
     except Exception as exc:
         raise ConfigEntryNotReady("Timeout while connecting to Powerbrain") from exc
+    try:
+        await hass.async_add_executor_job(brain.validate_auth)
+    except Exception as exc:
+        raise ConfigEntryAuthFailed("Authentification failed") from exc
 
     # Store an API object for your platforms to access
     hass.data[DOMAIN][entry.entry_id] = brain

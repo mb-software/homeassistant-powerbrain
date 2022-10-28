@@ -1,6 +1,7 @@
 """cFos Powerbrain http API interface."""
 import requests
 
+API_GET_VALIDATE_AUTH = "/ui/en/sim.htm"
 API_GET_PARAMS = "/cnf?cmd=get_params"
 API_GET_DEV_INFO = "/cnf?cmd=get_dev_info"
 API_OVERRIDE_DEVICE = "/cnf?cmd=override_device&dev_id="
@@ -19,6 +20,15 @@ class Powerbrain:
         self.name = ""
         self.devices = {}
         self.attributes = {}
+
+    def validate_auth(self):
+        """Make a request to check if given admin username and password are valid."""
+        response = requests.get(
+            self.host + API_GET_VALIDATE_AUTH,
+            timeout=5,
+            auth=(self.username, self.password),
+        )
+        response.raise_for_status()
 
     def get_devices(self):
         """Get powerbrain attributes and available devices."""

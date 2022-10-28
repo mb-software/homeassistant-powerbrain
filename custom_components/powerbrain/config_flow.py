@@ -58,15 +58,20 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     brain = Powerbrain(data[CONF_HOST], data[CONF_USERNAME], data[CONF_PASSWORD])
     try:
         await hass.async_add_executor_job(brain.get_devices)
-        return {"title": brain.name}
     except Exception as exc:
         raise CannotConnect from exc
+    try:
+        await hass.async_add_executor_job(brain.validate_auth)
+    except Exception as exc:
+        raise InvalidAuth from exc
+
+    return {"title": brain.name}
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for cFos Powerbrain."""
 
-    VERSION = 1
+    VERSION = 2
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
