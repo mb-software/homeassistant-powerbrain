@@ -1,0 +1,20 @@
+enter_rfid:
+  name: Enter RFID
+  description: Enters RFID / PIN into charging station
+  fields:
+    rfid:
+      name: RFID
+      description: RFID or PIN code
+      required: true
+      example: "XXXX"
+    dev_id:
+      name: Device Id
+      description: Specify Evse/wallbox device id (optional)
+      required: false
+      example: "E1"
+    powerbrain_host:
+      name: Powerbrain instance host
+      description: Specify host address if more than one Powerbrain instance is configured (optional)
+      advanced: true
+      required: false
+      example: "192.168.1.20"

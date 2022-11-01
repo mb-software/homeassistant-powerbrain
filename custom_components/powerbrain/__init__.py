@@ -18,6 +18,7 @@ from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers.device_registry import DeviceEntry
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.helpers.update_coordinator import UpdateFailed
@@ -45,6 +46,25 @@ async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass.config_entries.async_update_entry(entry, data=new)
 
     _LOGGER.debug("Migrating to version %s successful", entry.version)
+
+    return True
+
+
+async def async_setup(hass: HomeAssistant, config):
+    """Setup integration and services."""
+
+    async def handle_enter_rfid(call):
+        entries = hass.config_entries.async_entries(DOMAIN)
+        for entry in entries:
+            brain = hass.data[DOMAIN][entry.entry_id]
+            host = call.data.get("powerbrain_host", "")
+            if host == "" or host == brain.host:
+                dev_id = call.data.get("dev_id", "")
+                hass.async_add_executor_job(
+                    brain.enter_rfid, call.data.get("rfid"), dev_id
+                )
+
+    hass.services.async_register(DOMAIN, "enter_rfid", handle_enter_rfid)
 
     return True
 
@@ -106,6 +126,13 @@ async def update_listener(hass, entry):
     )
 
 
+async def async_remove_config_entry_device(
+    hass: HomeAssistant, config_entry: ConfigEntry, device_entry: DeviceEntry
+) -> bool:
+    """Remove a config entry from a device."""
+    return True
+
+
 class PowerbrainUpdateCoordinator(DataUpdateCoordinator):
     """Coordinator to fetch data from the powerbrain api."""
 
@@ -136,9 +163,10 @@ def get_entity_deviceinfo(device: Device) -> DeviceInfo:
     return {
         "identifiers": {
             # Serial numbers are unique identifiers within a specific domain
-            (DOMAIN, device.name)
+            (DOMAIN, f"{device.brain.attributes['vsn']['serialno']}_{device.dev_id}")
         },
         "name": device.name,
         "manufacturer": "cFos",
         "model": device.attributes["model"],
+        "configuration_url": device.brain.host,
     }

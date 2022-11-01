@@ -4,9 +4,11 @@ import requests
 API_GET_VALIDATE_AUTH = "/ui/en/sim.htm"
 API_GET_PARAMS = "/cnf?cmd=get_params"
 API_GET_DEV_INFO = "/cnf?cmd=get_dev_info"
+API_GET_ENTER_RFID = "/cnf?cmd=enter_rfid&rfid="
 API_OVERRIDE_DEVICE = "/cnf?cmd=override_device&dev_id="
 API_OVERRIDE_FLAG_AMPS = "&mamps="
 API_OVERRIDE_FLAGS = "&flags="
+API_DEV_ID = "&dev_id="
 
 
 class Powerbrain:
@@ -52,6 +54,13 @@ class Powerbrain:
         for k, device in self.devices.items():
             attr = next((x for x in dev_info["devices"] if x["dev_id"] == k), "")
             device.update_status(attr)
+
+    def enter_rfid(self, rfid, dev=""):
+        """Enter RFID or PIN code."""
+        dev_id = ""
+        if dev != "":
+            dev_id = API_DEV_ID + dev
+        requests.get(self.host + API_GET_ENTER_RFID + rfid + dev_id, timeout=5)
 
 
 class Device:
