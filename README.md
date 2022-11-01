@@ -47,7 +47,6 @@ Simply enter the host (IP address) of your powerbrain controller in the local ne
 ![config1img]
 ![config2img]
 
-
 ## Contributions are welcome!
 
 If you want to contribute to this please read the [Contribution guidelines](CONTRIBUTING.md)
