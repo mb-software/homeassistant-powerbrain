@@ -61,7 +61,7 @@ async def async_setup(hass: HomeAssistant, config):
             if host == "" or host == brain.host:
                 dev_id = call.data.get("dev_id", "")
                 hass.async_add_executor_job(
-                    brain.enter_rfid, call.data.get("rfid"), dev_id
+                    brain.enter_rfid, str(call.data.get("rfid")), dev_id
                 )
 
     hass.services.async_register(DOMAIN, "enter_rfid", handle_enter_rfid)

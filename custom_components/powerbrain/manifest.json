@@ -1,7 +1,6 @@
 {
   "domain": "powerbrain",
   "name": "cFos Powerbrain",
-  "integration_type": "hub",
   "documentation": "https://github.com/mb-software/homeassistant-powerbrain",
   "issue_tracker": "https://github.com/mb-software/homeassistant-powerbrain/issues",
   "dependencies": [],
