@@ -6,8 +6,6 @@
 
 [![hacs][hacsbadge]][hacs]
 
-![GitHub all releases](https://img.shields.io/github/downloads/mb-software/homeassistant-powerbrain/total?style=for-the-badge)
-
 <a href="https://www.buymeacoffee.com/mbsoftware"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=mbsoftware&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff" /></a>
 
 ### Integration for Homeassistant to view and control devices (EV charging stations and powermeters) connected to a cFos Powerbrain charging controller or cFos charging manager
@@ -70,4 +68,3 @@ If you want to contribute to this please read the [Contribution guidelines](CONT
 [releases-shield]: https://img.shields.io/github/release/mb-software/homeassistant-powerbrain.svg?style=for-the-badge
 [releases]: https://github.com/mb-software/homeassistant-powerbrain/releases
 [user_profile]: https://github.com/mb-software
-
