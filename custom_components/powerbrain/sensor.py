@@ -76,18 +76,22 @@ class PowerbrainDeviceSensor(CoordinatorEntity, SensorEntity):
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
-        if self.state_modifier is None:
-            self._attr_native_value = self.device.attributes[self.attribute]
-        elif isinstance(self.state_modifier, types.LambdaType):
-            self._attr_native_value = self.state_modifier(
-                self.device.attributes[self.attribute]
-            )
-        else:
-            self._attr_native_value = (
-                self.device.attributes[self.attribute] * self.state_modifier
-            )
 
-        self.async_write_ha_state()
+        new_value = 0
+        if self.state_modifier is None:
+            new_value = self.device.attributes[self.attribute]
+        elif isinstance(self.state_modifier, types.LambdaType):
+            new_value = self.state_modifier(self.device.attributes[self.attribute])
+        else:
+            new_value = self.device.attributes[self.attribute] * self.state_modifier
+
+        if (
+            self._attr_native_value is None
+            or new_value >= self._attr_native_value
+            or self._attr_state_class != SensorStateClass.TOTAL_INCREASING
+        ):
+            self._attr_native_value = new_value
+            self.async_write_ha_state()
 
     @property
     def device_info(self) -> DeviceInfo:
