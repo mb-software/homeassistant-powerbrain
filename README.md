@@ -25,10 +25,9 @@ If you want to do me a favor you can [buy me a coffee] or if you want to purchas
 
 ## Installation using HACS
 
-Simply install this repository as a custom repository for integrations in HACS following the guide here:
-https://hacs.xyz/docs/faq/custom_repositories .
+This integration can be found as a default repository in the <a href="https://hacs.xyz">Home Assistant Community Store</a>.
 
-Then you can simply download and update the integration using HACS
+if you have HACS installed you can simply download and update the integration using HACS.
 
 ## Manual Installation
 
@@ -57,7 +56,7 @@ If you want to contribute to this please read the [Contribution guidelines](CONT
 [commits-shield]: https://img.shields.io/github/commit-activity/y/mb-software/homeassistant-powerbrain.svg?style=for-the-badge
 [commits]: https://github.com/mb-software/homeassistant-powerbrain/commits/main
 [hacs]: https://hacs.xyz
-[hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
+[hacsbadge]: https://img.shields.io/badge/HACS-Default-orange.svg?style=for-the-badge
 [exampleimg]: doc/evse.png
 [config1img]: doc/ConfigFlow.png
 [config2img]: doc/device_discovery.png
