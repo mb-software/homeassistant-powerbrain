@@ -100,9 +100,18 @@ class Evse(Device):
         response.raise_for_status()
 
     def disable_charging_rules(self, disable: bool):
-        """Disable or enable charging rules."""
+        """Disable or enable evse charging rules."""
         response = requests.get(
             f"{self.brain.host}{API_OVERRIDE_DEVICE}{self.dev_id}{API_OVERRIDE_FLAGS}{'E' if disable else 'e'}",
+            timeout=5,
+            auth=(self.brain.username, self.brain.password),
+        )
+        response.raise_for_status()
+
+    def disable_user_rules(self, disable: bool):
+        """Disable or enable user charging rules."""
+        response = requests.get(
+            f"{self.brain.host}{API_OVERRIDE_DEVICE}{self.dev_id}{API_OVERRIDE_FLAGS}{'U' if disable else 'u'}",
             timeout=5,
             auth=(self.brain.username, self.brain.password),
         )

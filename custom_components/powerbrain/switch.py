@@ -40,6 +40,13 @@ async def async_setup_entry(
                     "Charging Rules Enabled",
                 )
             )
+            entities.append(
+                EnableUserRulesSwitchEntity(
+                    hass.data[DOMAIN][entry.entry_id + "_coordinator"],
+                    device,
+                    "User Rules Enabled",
+                )
+            )
     async_add_entities(entities)
 
 
@@ -90,7 +97,7 @@ class EnableRulesSwitchEntity(CoordinatorEntity, SwitchEntity):
     def __init__(
         self, coordinator: PowerbrainUpdateCoordinator, device: Evse, name: str
     ) -> None:
-        """Initialize entity for charging current override."""
+        """Initialize entity for evse rules switch."""
         super().__init__(coordinator)
         self.device = device
         self._attr_has_entity_name = True
@@ -124,3 +131,23 @@ class EnableRulesSwitchEntity(CoordinatorEntity, SwitchEntity):
         """Switch status."""
         overridebit2 = self.device.attributes.get("overrides", 0) & 0b0010
         return not overridebit2
+
+
+class EnableUserRulesSwitchEntity(EnableRulesSwitchEntity):
+    """Switch entity for evse user rules."""
+
+    async def async_turn_on(self, **kwargs: Any) -> None:
+        """Turn switch on."""
+        await self.hass.async_add_executor_job(self.device.disable_user_rules, False)
+        await self.coordinator.async_request_refresh()
+
+    async def async_turn_off(self, **kwargs: Any) -> None:
+        """Turn switch off."""
+        await self.hass.async_add_executor_job(self.device.disable_user_rules, True)
+        await self.coordinator.async_request_refresh()
+
+    @property
+    def is_on(self) -> bool:
+        """Switch status."""
+        overridebit3 = self.device.attributes.get("overrides", 0) & 0b0100
+        return not overridebit3
