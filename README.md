@@ -16,6 +16,7 @@
 - Creates sensors to read values from power meters (voltage, current, energy, ...)
 - Creates switches to control charging stations (enable charging, enable charging rules, set charging current, ...)
 - Adds a Homeassistant service to enter RFID/PIN codes into EVSE/wallboxes, allowing all kind of automations to authorize charging or change charging rules.
+- Adds a Homeassistant service to send power meter values to an HTTP input meter in the charging manager
 
 \*\*Please note that this integration is still in an early stage and functionality will likely be extended in the future. If you experience any issues or bugs or if you have a feature request, please raise an issue on Github. If you want to contribute, please also read the [Contribution guidelines](CONTRIBUTING.md) .
 
