@@ -9,6 +9,7 @@ API_OVERRIDE_DEVICE = "/cnf?cmd=override_device&dev_id="
 API_OVERRIDE_FLAG_AMPS = "&mamps="
 API_OVERRIDE_FLAGS = "&flags="
 API_DEV_ID = "&dev_id="
+API_SET_METER = "/cnf?cmd=set_ajax_meter"
 
 
 class Powerbrain:
@@ -46,7 +47,7 @@ class Powerbrain:
                 if device_attr["is_evse"]:
                     self.devices[device_attr["dev_id"]] = Evse(device_attr, self)
                 else:
-                    self.devices[device_attr["dev_id"]] = Device(device_attr, self)
+                    self.devices[device_attr["dev_id"]] = Meter(device_attr, self)
 
     def update_device_status(self):
         """Update the device status."""
@@ -112,6 +113,20 @@ class Evse(Device):
         """Disable or enable user charging rules."""
         response = requests.get(
             f"{self.brain.host}{API_OVERRIDE_DEVICE}{self.dev_id}{API_OVERRIDE_FLAGS}{'U' if disable else 'u'}",
+            timeout=5,
+            auth=(self.brain.username, self.brain.password),
+        )
+        response.raise_for_status()
+
+
+class Meter(Device):
+    """Energy meter device"""
+
+    def set_value(self, data):
+        """send values of httpinput meter"""
+        response = requests.post(
+            f"{self.brain.host}{API_SET_METER}{API_DEV_ID}{self.dev_id}",
+            json=data,
             timeout=5,
             auth=(self.brain.username, self.brain.password),
         )

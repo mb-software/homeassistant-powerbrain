@@ -64,7 +64,38 @@ async def async_setup(hass: HomeAssistant, config):
                     brain.enter_rfid, str(call.data.get("rfid")), dev_id
                 )
 
+    async def handle_set_meter(call):
+        entries = hass.config_entries.async_entries(DOMAIN)
+        for entry in entries:
+            brain = hass.data[DOMAIN][entry.entry_id]
+            host = call.data.get("powerbrain_host", "")
+            if host == "" or host == brain.host:
+                dev_id = call.data.get("dev_id", "")
+                data = {}
+                if "power" in call.data:
+                    data["power_va"] = call.data.get("power")
+                if "voltage_l1" in call.data:
+                    data["voltage"] = [
+                        call.data.get("voltage_l1"),
+                        call.data.get("voltage_l2", 230),
+                        call.data.get("voltage_l3", 230),
+                    ]
+                if "current_l1" in call.data:
+                    data["current"] = [
+                        call.data.get("current_l1") * 1000,
+                        call.data.get("current_l2", 0) * 1000,
+                        call.data.get("current_l3", 0) * 1000,
+                    ]
+                if "import_energy" in call.data:
+                    data["import_wh"] = call.data.get("import_energy") * 1000
+                if "export_energy" in call.data:
+                    data["export_wh"] = call.data.get("export_energy") * 1000
+                if "is_va" in call.data:
+                    data["is_va"] = call.data.get("is_va")
+                hass.async_add_executor_job(brain.devices[dev_id].set_value, data)
+
     hass.services.async_register(DOMAIN, "enter_rfid", handle_enter_rfid)
+    hass.services.async_register(DOMAIN, "set_meter", handle_set_meter)
 
     return True
 

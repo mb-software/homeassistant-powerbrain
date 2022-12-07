@@ -18,3 +18,73 @@ enter_rfid:
       advanced: true
       required: false
       example: "192.168.1.20"
+
+set_meter:
+  name: Set Energy Meter
+  description: Sets values of a energy meter of type HTTP input
+  fields:
+    dev_id:
+      name: Device Id
+      description: Specify Meter device id
+      required: true
+      example: "M1"
+    power:
+      name: Power
+      description: Actual Power (W or VA)
+      required: false
+      example: 11
+    is_va:
+      name: is_va
+      description: Power measured in VA (else W)
+      required: false
+      example: False
+      default: True
+    voltage_l1:
+      name: Voltage L1
+      description: Voltage L1 (V)
+      required: false
+      default: 230
+      example: 230
+    voltage_l2:
+      name: Voltage L2
+      description: Voltage L2 (V)
+      required: false
+      default: 230
+      example: 230
+    voltage_l3:
+      name: Voltage L3
+      description: Voltage L3 (V)
+      required: false
+      default: 230
+      example: 230
+    current_l1:
+      name: Current L1
+      description: Current L1 (A)
+      required: false
+      example: 1
+    current_l2:
+      name: Current L2
+      description: Current L2 (A)
+      required: false
+      example: 1
+    current_l3:
+      name: Current L3
+      description: Current L3 (A)
+      required: false
+      example: 1
+    import_energy:
+      name: Import Energy
+      description: Imorted Energy (kWh)
+      required: false
+      example: 1234
+    export_energy:
+      name: Export Energy
+      description: Exported Energy (kWh)
+      required: false
+      example: 1234
+    powerbrain_host:
+      name: Powerbrain instance host
+      description: Specify host address if more than one Powerbrain instance is configured (optional)
+      advanced: true
+      required: false
+      example: "192.168.1.20"
