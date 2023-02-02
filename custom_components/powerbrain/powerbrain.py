@@ -5,10 +5,12 @@ API_GET_VALIDATE_AUTH = "/ui/en/sim.htm"
 API_GET_PARAMS = "/cnf?cmd=get_params"
 API_GET_DEV_INFO = "/cnf?cmd=get_dev_info"
 API_GET_ENTER_RFID = "/cnf?cmd=enter_rfid&rfid="
+API_GET_SET_VAR = "/cnf?cmd=set_cm_vars&name="
 API_OVERRIDE_DEVICE = "/cnf?cmd=override_device&dev_id="
 API_OVERRIDE_FLAG_AMPS = "&mamps="
 API_OVERRIDE_FLAGS = "&flags="
 API_DEV_ID = "&dev_id="
+API_VAR_VAL = "&val="
 API_SET_METER = "/cnf?cmd=set_ajax_meter"
 
 
@@ -62,6 +64,14 @@ class Powerbrain:
         if dev != "":
             dev_id = API_DEV_ID + dev
         requests.get(self.host + API_GET_ENTER_RFID + rfid + dev_id, timeout=5)
+
+    def set_variable(self, name, value):
+        """Set value of a charging manager variable"""
+        requests.get(
+            f"{self.host}{API_GET_SET_VAR}{name}{API_VAR_VAL}{value}",
+            timeout=5,
+            auth=(self.username, self.password),
+        )
 
 
 class Device:
