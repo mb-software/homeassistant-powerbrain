@@ -87,4 +87,24 @@ set_meter:
       description: Specify host address if more than one Powerbrain instance is configured (optional)
       advanced: true
       required: false
-      example: "http://192.168.1.20"
+      example: "192.168.1.20"
+set_variable:
+  name: Set Variable
+  description: Sets value of a charging manager variable
+  fields:
+    variable:
+      name: Variable name
+      description: Name of the variable
+      required: true
+      example: "myVar"
+    value:
+      name: Variable value
+      description: The value to be set
+      required: true
+      example: 123
+    powerbrain_host:
+      name: Powerbrain instance host
+      description: Specify host address if more than one Powerbrain instance is configured (optional)
+      advanced: true
+      required: false
+      example: "192.168.1.20"

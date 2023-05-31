@@ -94,8 +94,19 @@ async def async_setup(hass: HomeAssistant, config):
                     data["is_va"] = call.data.get("is_va")
                 hass.async_add_executor_job(brain.devices[dev_id].set_value, data)
 
+    async def handle_set_variable(call):
+        entries = hass.config_entries.async_entries(DOMAIN)
+        for entry in entries:
+            brain = hass.data[DOMAIN][entry.entry_id]
+            host = call.data.get("powerbrain_host", "")
+            if host == "" or host == brain.host:
+                name = call.data.get("variable")
+                value = call.data.get("value")
+                hass.async_add_executor_job(brain.set_variable, name, value)
+
     hass.services.async_register(DOMAIN, "enter_rfid", handle_enter_rfid)
     hass.services.async_register(DOMAIN, "set_meter", handle_set_meter)
+    hass.services.async_register(DOMAIN, "set_variable", handle_set_variable)
 
     return True
 
