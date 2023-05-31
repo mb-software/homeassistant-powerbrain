@@ -1,9 +1,7 @@
 {
   "domain": "powerbrain",
   "name": "cFos Powerbrain",
-  "codeowners": [
-    "@mb-software"
-  ],
+  "codeowners": ["@mb-software"],
   "config_flow": true,
   "dependencies": [],
   "documentation": "https://github.com/mb-software/homeassistant-powerbrain",
