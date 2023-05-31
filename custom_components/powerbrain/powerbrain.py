@@ -25,6 +25,7 @@ class Powerbrain:
         self.name = ""
         self.devices = {}
         self.attributes = {}
+        self.version = 0.0
 
     def validate_auth(self):
         """Make a request to check if given admin username and password are valid."""
@@ -43,6 +44,8 @@ class Powerbrain:
         params = dev_info["params"]
         self.name = params["title"]
         self.attributes = params
+        version_list = params["version"].split(".")
+        self.version = float(version_list[0] + "." + version_list[1])
 
         for device_attr in dev_info["devices"]:
             if device_attr["device_enabled"]:
