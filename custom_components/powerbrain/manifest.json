@@ -1,12 +1,14 @@
 {
   "domain": "powerbrain",
   "name": "cFos Powerbrain",
-  "codeowners": ["@mb-software"],
+  "codeowners": [
+    "@mb-software"
+  ],
   "config_flow": true,
   "dependencies": [],
   "documentation": "https://github.com/mb-software/homeassistant-powerbrain",
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/mb-software/homeassistant-powerbrain/issues",
   "requirements": [],
-  "version": "0.5.0"
+  "version": "0.6.0"
 }
