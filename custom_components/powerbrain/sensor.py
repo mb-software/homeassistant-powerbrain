@@ -103,13 +103,17 @@ def create_meter_entities(coordinator: PowerbrainUpdateCoordinator, device: Devi
     """Create the entities for a powermeter device."""
     ret = []
 
+    power_unit = "W"
+    if "is_va" in device.attributes:
+        if device.attributes["is_va"]:
+            power_unit = "VA"
     ret.append(
         PowerbrainDeviceSensor(
             coordinator,
             device,
-            "power",
+            "power_w" if coordinator.brain.version >= 1.2 else "power",
             "Power",
-            "VA" if device.attributes["is_va"] else "W",
+            power_unit,
             SensorDeviceClass.POWER,
             SensorStateClass.MEASUREMENT,
         )
@@ -218,7 +222,7 @@ def create_evse_entities(coordinator: PowerbrainUpdateCoordinator, device: Devic
         PowerbrainDeviceSensor(
             coordinator,
             device,
-            "cur_charging_power",
+            "power_w" if coordinator.brain.version >= 1.2 else "cur_charging_power",
             "Charging Power",
             "W",
             SensorDeviceClass.POWER,

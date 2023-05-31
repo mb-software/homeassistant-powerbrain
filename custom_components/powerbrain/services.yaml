@@ -17,7 +17,7 @@ enter_rfid:
       description: Specify host address if more than one Powerbrain instance is configured (optional)
       advanced: true
       required: false
-      example: "192.168.1.20"
+      example: "http://192.168.1.20"
 
 set_meter:
   name: Set Energy Meter
