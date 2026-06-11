@@ -30,7 +30,7 @@ from .powerbrain import Powerbrain
 _LOGGER = logging.getLogger(__name__)
 
 # List the platforms that you want to support.
-PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.NUMBER, Platform.SWITCH]
+PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.NUMBER, Platform.SWITCH, Platform.SELECT]
 
 
 async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -92,6 +92,8 @@ async def async_setup(hass: HomeAssistant, config):
                     data["export_wh"] = call.data.get("export_energy") * 1000
                 if "is_va" in call.data:
                     data["is_va"] = call.data.get("is_va")
+                if "soc" in call.data:
+                    data["soc"] = call.data.get("soc")
                 hass.async_add_executor_job(brain.devices[dev_id].set_value, data)
 
     async def handle_set_variable(call):
@@ -104,9 +106,118 @@ async def async_setup(hass: HomeAssistant, config):
                 value = call.data.get("value")
                 hass.async_add_executor_job(brain.set_variable, name, value)
 
+    async def handle_set_params(call):
+        """Set global Charging Manager parameters."""
+        entries = hass.config_entries.async_entries(DOMAIN)
+        for entry in entries:
+            brain = hass.data[DOMAIN][entry.entry_id]
+            host = call.data.get("powerbrain_host", "")
+            if host == "" or host == brain.host:
+                params = {
+                    k: v
+                    for k, v in call.data.items()
+                    if k != "powerbrain_host"
+                }
+                hass.async_add_executor_job(brain.set_params, params)
+
+    async def handle_set_charging_rules(call):
+        """Set charging rules for a specific EVSE."""
+        entries = hass.config_entries.async_entries(DOMAIN)
+        for entry in entries:
+            brain = hass.data[DOMAIN][entry.entry_id]
+            host = call.data.get("powerbrain_host", "")
+            if host == "" or host == brain.host:
+                dev_id = call.data.get("dev_id")
+                rules = call.data.get("rules", [])
+                if dev_id in brain.devices:
+                    hass.async_add_executor_job(
+                        brain.devices[dev_id].set_charging_rules, rules
+                    )
+
+    async def handle_update_charging_rule(call):
+        """Update a single charging rule identified by its cmt label.
+
+        Reads current rules, finds the rule with the matching cmt,
+        applies the provided field updates, and writes all rules back.
+        If no rule with that cmt exists, a new one is appended.
+        """
+        entries = hass.config_entries.async_entries(DOMAIN)
+        for entry in entries:
+            brain = hass.data[DOMAIN][entry.entry_id]
+            host = call.data.get("powerbrain_host", "")
+            if host == "" or host == brain.host:
+                dev_id = call.data.get("dev_id")
+                cmt = call.data.get("cmt")
+                updates = {k: v for k, v in call.data.items()
+                           if k not in ("dev_id", "cmt", "powerbrain_host")}
+                if dev_id not in brain.devices:
+                    continue
+                rules = await hass.async_add_executor_job(
+                    brain.devices[dev_id].get_charging_rules
+                )
+                found = False
+                new_rules = []
+                for rule in rules:
+                    if rule.get("cmt") == cmt:
+                        new_rules.append({**rule, **updates})
+                        found = True
+                    else:
+                        new_rules.append(rule)
+                if not found:
+                    new_rule = {
+                        "cmt": cmt, "days": 127, "ctype": 0, "atype": 0,
+                        "aexpr": 32000, "udur": 0, "flags": 16, "ena": True, "id": 0,
+                    }
+                    new_rule.update(updates)
+                    new_rules.append(new_rule)
+                    _LOGGER.info(
+                        "update_charging_rule: rule '%s' not found in %s, appended new rule",
+                        cmt, dev_id,
+                    )
+                await hass.async_add_executor_job(
+                    brain.devices[dev_id].set_charging_rules, new_rules
+                )
+                _LOGGER.info(
+                    "update_charging_rule: updated rule '%s' on %s: %s",
+                    cmt, dev_id, updates,
+                )
+
+    async def handle_get_charging_rules(call):
+        """Log current charging rules for a specific EVSE (debug helper)."""
+        entries = hass.config_entries.async_entries(DOMAIN)
+        for entry in entries:
+            brain = hass.data[DOMAIN][entry.entry_id]
+            host = call.data.get("powerbrain_host", "")
+            if host == "" or host == brain.host:
+                dev_id = call.data.get("dev_id")
+                if dev_id in brain.devices:
+                    rules = await hass.async_add_executor_job(
+                        brain.devices[dev_id].get_charging_rules
+                    )
+                    _LOGGER.info("Charging rules for %s: %s", dev_id, rules)
+
+    async def handle_set_phase_mode(call):
+        """Set phase mode for a specific EVSE (1 or 3 phases)."""
+        entries = hass.config_entries.async_entries(DOMAIN)
+        for entry in entries:
+            brain = hass.data[DOMAIN][entry.entry_id]
+            host = call.data.get("powerbrain_host", "")
+            if host == "" or host == brain.host:
+                dev_id = call.data.get("dev_id")
+                phases = call.data.get("phases", 3)
+                if dev_id in brain.devices:
+                    hass.async_add_executor_job(
+                        brain.devices[dev_id].set_phase_mode, phases
+                    )
+
     hass.services.async_register(DOMAIN, "enter_rfid", handle_enter_rfid)
     hass.services.async_register(DOMAIN, "set_meter", handle_set_meter)
     hass.services.async_register(DOMAIN, "set_variable", handle_set_variable)
+    hass.services.async_register(DOMAIN, "set_params", handle_set_params)
+    hass.services.async_register(DOMAIN, "set_charging_rules", handle_set_charging_rules)
+    hass.services.async_register(DOMAIN, "update_charging_rule", handle_update_charging_rule)
+    hass.services.async_register(DOMAIN, "get_charging_rules", handle_get_charging_rules)
+    hass.services.async_register(DOMAIN, "set_phase_mode", handle_set_phase_mode)
 
     return True
 

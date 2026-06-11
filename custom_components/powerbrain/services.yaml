@@ -88,6 +88,11 @@ set_meter:
       advanced: true
       required: false
       example: "192.168.1.20"
+    soc:
+      name: State of Charge
+      description: Battery state of charge 0-100% (for storage meters only)
+      required: false
+      example: 75
 set_variable:
   name: Set Variable
   description: Sets value of a charging manager variable
@@ -108,3 +113,176 @@ set_variable:
       advanced: true
       required: false
       example: "192.168.1.20"
+
+set_params:
+  name: Set Charging Manager Parameters
+  description: >
+    Set global cFos Charging Manager parameters (e.g. min_pause_time,
+    disable_policy, max_total_current, lb_enabled, feed_in_tariff, surplus_expr).
+    Only include the keys you want to change.
+  fields:
+    min_pause_time:
+      name: Minimum Pause Time
+      description: Minimum pause duration between charging sessions (seconds)
+      required: false
+      example: 300
+    disable_policy:
+      name: Disable Policy
+      description: >
+        Policy when device is disabled.
+        0 = disable EVSE, 1 = use minimum charging current, -1 = remove limit (free charging)
+      required: false
+      example: 1
+    max_total_current:
+      name: Max Total Current
+      description: Total installed power limit in mA
+      required: false
+      example: 32000
+    lb_enabled:
+      name: Load Balancing Enabled
+      description: Enable or disable load balancing
+      required: false
+      example: true
+    feed_in_tariff:
+      name: Feed-in Tariff
+      description: Feed-in tariff in currency/kWh (used for solar surplus logic)
+      required: false
+      example: 0.04
+    surplus_expr:
+      name: Surplus Expression
+      description: Expression to calculate surplus power
+      required: false
+      example: ""
+    powerbrain_host:
+      name: Powerbrain instance host
+      description: Specify host address if more than one Powerbrain instance is configured (optional)
+      advanced: true
+      required: false
+      example: "http://192.168.1.20"
+
+set_charging_rules:
+  name: Set EVSE Charging Rules
+  description: >
+    Set (replace) the charging rules for a specific EVSE.
+    Rules are evaluated in order; all existing rules are replaced.
+    Uses the native cFos set_device API with crule_set format.
+  fields:
+    dev_id:
+      name: Device Id
+      description: EVSE device ID (e.g. E1)
+      required: true
+      example: "E1"
+    rules:
+      name: Charging Rules
+      description: >
+        Array of rule objects in cFos native format. Each rule may contain:
+        cmt (str, comment/label),
+        days (int, weekday bitfield: bit0=Mon...bit6=Sun, 127=all days),
+        ctype (int, condition type: 0=none/time, 1=solar surplus, ...),
+        atype (int, action type: 0=set current in mA, 10=pause),
+        aexpr (int, action value: current in mA for atype=0, 1 for atype=10),
+        time (int, start time in minutes since midnight),
+        dur (int, duration in minutes),
+        udur (int, undercut duration in seconds),
+        flags (int, 16=normal, 18=end-on-finish),
+        ena (bool, rule enabled),
+        id (int, 0=auto-assign).
+      required: true
+      example: '[{"cmt": "Overnight", "days": 127, "ctype": 0, "atype": 0, "aexpr": 16000, "time": 1320, "dur": 540, "udur": 0, "flags": 16, "ena": true, "id": 0}]'
+    powerbrain_host:
+      name: Powerbrain instance host
+      description: Specify host address if more than one Powerbrain instance is configured (optional)
+      advanced: true
+      required: false
+      example: "http://192.168.1.20"
+
+update_charging_rule:
+  name: Update EVSE Charging Rule by Label
+  description: >
+    Find a charging rule by its cmt label and update specific fields only.
+    All other rules remain unchanged. If no rule with that label exists, a new one is appended.
+    This is the recommended way to update a single rule (e.g. change start time/duration)
+    without affecting other rules like solar-pause rules.
+  fields:
+    dev_id:
+      name: Device Id
+      description: EVSE device ID (e.g. E1)
+      required: true
+      example: "E1"
+    cmt:
+      name: Rule Label
+      description: The cmt (comment/label) of the rule to update
+      required: true
+      example: "EV Carregamento Nocturno"
+    time:
+      name: Start Time (minutes)
+      description: New start time in minutes since midnight (e.g. 1320 = 22:00)
+      required: false
+      example: 1320
+    dur:
+      name: Duration (minutes)
+      description: New duration in minutes
+      required: false
+      example: 180
+    aexpr:
+      name: Current (mA)
+      description: Charging current in mA (for atype=0 rules)
+      required: false
+      example: 16000
+    ena:
+      name: Enabled
+      description: Enable or disable the rule
+      required: false
+      example: true
+    days:
+      name: Days
+      description: Weekday bitfield (bit0=Mon...bit6=Sun, 127=all days)
+      required: false
+      example: 127
+    powerbrain_host:
+      name: Powerbrain instance host
+      description: Specify host address if more than one Powerbrain instance is configured (optional)
+      advanced: true
+      required: false
+      example: "http://192.168.1.20"
+
+get_charging_rules:
+  name: Get EVSE Charging Rules
+  description: >
+    Retrieve and log the current charging rules for a specific EVSE.
+    Rules are written to the Home Assistant log at INFO level.
+  fields:
+    dev_id:
+      name: Device Id
+      description: EVSE device ID (e.g. E1)
+      required: true
+      example: "E1"
+    powerbrain_host:
+      name: Powerbrain instance host
+      description: Specify host address if more than one Powerbrain instance is configured (optional)
+      advanced: true
+      required: false
+      example: "http://192.168.1.20"
+
+set_phase_mode:
+  name: Set Phase Mode
+  description: >
+    Set the charging phase mode for an EVSE (1-phase or 3-phase).
+    Uses Modbus register 8044 to set the used_phases bitfield.
+  fields:
+    dev_id:
+      name: Device Id
+      description: EVSE device ID (e.g. E1)
+      required: true
+      example: "E1"
+    phases:
+      name: Phases
+      description: "Number of phases: 1 = single-phase (L1 only), 3 = three-phase (L1+L2+L3)"
+      required: true
+      example: 1
+    powerbrain_host:
+      name: Powerbrain instance host
+      description: Specify host address if more than one Powerbrain instance is configured (optional)
+      advanced: true
+      required: false
+      example: "http://192.168.1.20"
