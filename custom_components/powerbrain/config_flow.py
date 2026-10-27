@@ -17,6 +17,7 @@ from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
 
 from .const import DOMAIN
+from .powerbrain import AuthenticationError
 from .powerbrain import Powerbrain
 
 _LOGGER = logging.getLogger(__name__)
@@ -62,8 +63,10 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
         raise CannotConnect from exc
     try:
         await hass.async_add_executor_job(brain.validate_auth)
-    except Exception as exc:
+    except AuthenticationError as exc:
         raise InvalidAuth from exc
+    except Exception as exc:
+        raise CannotConnect from exc
 
     return {"title": brain.name}
 

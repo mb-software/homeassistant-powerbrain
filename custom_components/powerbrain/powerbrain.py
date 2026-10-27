@@ -14,6 +14,10 @@ API_VAR_VAL = "&val="
 API_SET_METER = "/cnf?cmd=set_ajax_meter"
 
 
+class AuthenticationError(Exception):
+    """Raised when the Powerbrain rejects the admin credentials."""
+
+
 class Powerbrain:
     """Powerbrain charging controller class."""
 
@@ -33,7 +37,14 @@ class Powerbrain:
             self.host + API_GET_VALIDATE_AUTH,
             timeout=5,
             auth=(self.username, self.password),
+            allow_redirects=False,
         )
+        # Depending on the firmware, invalid credentials are answered with 401/403
+        # or with a redirect to the login page (e.g. 302 on 2.12.13)
+        if response.status_code in (401, 403) or (
+            response.is_redirect and "login" in response.headers.get("Location", "")
+        ):
+            raise AuthenticationError
         response.raise_for_status()
 
     def get_devices(self):

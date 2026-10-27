@@ -24,6 +24,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.helpers.update_coordinator import UpdateFailed
 
 from .const import DOMAIN
+from .powerbrain import AuthenticationError
 from .powerbrain import Device
 from .powerbrain import Powerbrain
 
@@ -128,8 +129,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         raise ConfigEntryNotReady("Timeout while connecting to Powerbrain") from exc
     try:
         await hass.async_add_executor_job(brain.validate_auth)
-    except Exception as exc:
+    except AuthenticationError as exc:
         raise ConfigEntryAuthFailed("Authentification failed") from exc
+    except Exception as exc:
+        raise ConfigEntryNotReady("Error while validating authentication") from exc
 
     # Store an API object for your platforms to access
     hass.data[DOMAIN][entry.entry_id] = brain
