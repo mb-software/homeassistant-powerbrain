@@ -15,6 +15,7 @@
 - Automatically discovers and creates devices (powermeters and charging stations) connected to a Powerbrain controller
 - Creates sensors to read values from power meters (voltage, current, energy, ...)
 - Creates switches to control charging stations (enable charging, enable charging rules, set charging current, ...)
+- Creates a select entity per charging station to switch the active charging rule set (rule sets are read from the charging manager; admin credentials required)
 - Adds a Homeassistant service to enter RFID/PIN codes into EVSE/wallboxes, allowing all kind of automations to authorize charging or change charging rules.
 - Adds a Homeassistant service to send power meter values to an HTTP input meter in the charging manager
 - Adds a Homeassistant service to set global charging manager variables

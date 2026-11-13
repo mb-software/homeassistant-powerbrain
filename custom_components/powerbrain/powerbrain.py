@@ -1,4 +1,6 @@
 """cFos Powerbrain http API interface."""
+from urllib.parse import quote
+
 import requests
 
 API_GET_VALIDATE_AUTH = "/ui/en/sim.htm"
@@ -6,6 +8,9 @@ API_GET_PARAMS = "/cnf?cmd=get_params"
 API_GET_DEV_INFO = "/cnf?cmd=get_dev_info"
 API_GET_ENTER_RFID = "/cnf?cmd=enter_rfid&rfid="
 API_GET_SET_VAR = "/cnf?cmd=set_cm_vars&name="
+API_GET_RULE_SETS = "/cnf?cmd=get_rule_sets"
+API_GET_OVERRIDES = "/cnf?cmd=get_overrides&dev_id="
+API_SWITCH_RULE_SET = "/cnf?cmd=switch_rule_set&set_id="
 API_OVERRIDE_DEVICE = "/cnf?cmd=override_device&dev_id="
 API_OVERRIDE_FLAG_AMPS = "&mamps="
 API_OVERRIDE_FLAGS = "&flags="
@@ -60,6 +65,14 @@ class Powerbrain:
         for k, device in self.devices.items():
             attr = next((x for x in dev_info["devices"] if x["dev_id"] == k), "")
             device.update_status(attr)
+            if isinstance(device, Evse):
+                device.update_overrides()
+
+    def get_rule_sets(self):
+        """Get the list of available charging rule sets (set_id and name)."""
+        response = requests.get(self.host + API_GET_RULE_SETS, timeout=5)
+        response.raise_for_status()
+        return response.json()
 
     def enter_rfid(self, rfid, dev=""):
         """Enter RFID or PIN code."""
@@ -94,6 +107,34 @@ class Device:
 
 class Evse(Device):
     """EVSE device."""
+
+    def __init__(self, attr, brain: Powerbrain):
+        """Initialize the EVSE instance."""
+        super().__init__(attr, brain)
+        self.overrides = {}
+
+    def update_overrides(self):
+        """Read the active charging rule sets (rule_set_id, urule_set_id)."""
+        response = requests.get(
+            f"{self.brain.host}{API_GET_OVERRIDES}{self.dev_id}", timeout=5
+        )
+        response.raise_for_status()
+        self.overrides = response.json()
+
+    def switch_rule_set(self, set_id: str):
+        """Switch the active (admin) charging rule set.
+
+        The charging manager answers 200 OK even if the credentials are wrong
+        or the set_id is unknown, so the caller has to verify the result.
+        """
+        response = requests.get(
+            f"{self.brain.host}{API_SWITCH_RULE_SET}{quote(set_id, safe='')}"
+            f"{API_DEV_ID}{self.dev_id}",
+            timeout=5,
+            auth=(self.brain.username, self.brain.password),
+        )
+        response.raise_for_status()
+        self.update_overrides()
 
     def override_current_limit(self, value: float):
         """Override max charging current."""
